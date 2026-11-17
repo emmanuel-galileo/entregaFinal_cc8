@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CC8 · Dos conversaciones</title>
+<style>
+:root{color-scheme:dark;font-family:Segoe UI,system-ui,sans-serif;background:#0d1821;color:#e5eff4}*{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;padding:20px}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}h1{font-size:24px;margin:0}h2{font-size:16px;margin:0 0 10px}small,.muted{color:#91aab9}.badge{padding:7px 12px;border:1px solid #315464;border-radius:20px;color:#73dfb9;font-size:12px}
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(260px,.8fr);gap:14px;height:calc(100vh - 112px)}main.single{grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr)}section,aside>div{border:1px solid #2b4656;border-radius:12px;background:#14242f}.chat{display:flex;flex-direction:column;overflow:hidden;min-width:0}.heading{padding:14px 16px;border-bottom:1px solid #2b4656;display:flex;align-items:center;justify-content:space-between;gap:8px}.heading strong{color:#7be2bd}.status{font-size:12px;color:#91aab9}.messages{flex:1;overflow:auto;padding:14px;background:#0e1c26;min-height:100px}
+.bubble{max-width:94%;padding:10px 12px;border-radius:10px;margin:0 auto 10px 0;background:#253d4d;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.out{margin-left:auto;margin-right:0;background:#145746}.meta{display:block;font-size:10px;color:#a7cfc7;margin-top:7px}.author{display:block;color:#8cd7c0;font-size:11px;margin-bottom:5px}.message-text{font-size:17px}form{padding:10px;display:flex;gap:6px;border-top:1px solid #2b4656}input,select,button{font:inherit;color:inherit;border:1px solid #35576a;background:#0c1822;border-radius:7px;padding:8px}input,select{min-width:0}input{flex:1}button{cursor:pointer;background:#1b775f;font-weight:600}button:hover{background:#239375}button:disabled{opacity:.4;cursor:default}.samples{display:flex;gap:6px;padding:0 10px 8px}.samples select{flex:1;font-size:12px}.foot{padding:0 10px 10px;color:#9ab2c1;font-size:12px}.notice{display:block;min-height:16px;margin-top:4px}.tools{display:flex;gap:8px;flex-wrap:wrap}.tools button{background:#254455}
+aside{display:flex;flex-direction:column;gap:14px;min-height:0}aside>div{padding:14px}.states{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.state{background:#0c1a23;padding:9px;border-radius:8px;line-height:1.7;font-size:12px}#logs{flex:1;overflow:auto;font-size:12px;line-height:1.55;min-height:120px}.entry{padding:7px 0;border-bottom:1px solid #233e4c}.error{color:#ff9aa5}.success{color:#79d9b0}.warning{color:#ebc171}
+dialog{background:#14242f;color:#e5eff4;border:1px solid #35576a;border-radius:12px;max-width:480px;width:92vw;max-height:90vh;overflow:auto}dialog::backdrop{background:#0009}.symbols{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:14px}.symbols button{font-size:23px;background:#203a48;padding:8px}dialog h3{font-size:14px;color:#8cd7c0}
+@media(max-width:1000px){main{grid-template-columns:1fr 1fr;height:auto}.chat{height:72vh}aside{grid-column:1/-1}#logs{max-height:240px}}@media(max-width:640px){body{padding:10px}main,main.single{grid-template-columns:1fr}.chat{height:70vh}header{align-items:flex-start}.badge{display:none}}
+</style></head><body>
+<header><div><h1>CC8 · Dos conversaciones</h1><small>Cada chat muestra lo observado por su K8. La recepción llega por los medios físicos.</small></div><span class="badge">Servidor local · K8 ↔ K8</span></header>
+<main id="main">
+<section class="chat" data-node="A"><div class="heading"><strong>K8 A → B</strong><span class="status">Sin conexión</span></div><div class="messages"></div><form><input autocomplete="off" placeholder="Escribir desde A…" aria-label="Mensaje de A"><button class="picker" type="button" aria-label="Emojis y símbolos de A">☺</button><button class="submit">Enviar</button></form><div class="samples"><select aria-label="Ejemplo para A"></select><button class="load" type="button">Cargar</button></div><div class="foot"><span class="count">0 / 185 bytes</span><span class="notice" role="status"></span></div></section>
+<section class="chat" data-node="B"><div class="heading"><strong>K8 B → A</strong><span class="status">Sin conexión</span></div><div class="messages"></div><form><input autocomplete="off" placeholder="Escribir desde B…" aria-label="Mensaje de B"><button class="picker" type="button" aria-label="Emojis y símbolos de B">☺</button><button class="submit">Enviar</button></form><div class="samples"><select aria-label="Ejemplo para B"></select><button class="load" type="button">Cargar</button></div><div class="foot"><span class="count">0 / 185 bytes</span><span class="notice" role="status"></span></div></section>
+<aside><div><h2>Conexión y estado</h2><small>En dos PC, usa la app local de cada K8 con la misma codificación y CRC.</small><div class="states"><div class="state" id="a"></div><div class="state" id="b"></div></div><div class="tools"><button type="button" data-action="start">Activar chat</button><button type="button" data-action="stop">Detener</button><button type="button" data-action="status">Estado</button></div><p><small id="encoding"></small></p><small>Cargar solo prepara el texto. UTF-8 ya permite caracteres de 1, 2, 3 y 4 bytes; los emojis usan ese mismo mecanismo.</small><span id="notice" class="notice muted" role="status"></span></div><div id="logs"><h2>Registro reciente</h2></div></aside>
+</main>
+<dialog id="symbols"><h2>Emojis y símbolos</h2><p class="muted">Selecciona uno para insertarlo en el borrador. Los botones que requieren otra codificación aparecen desactivados.</p><div id="palettes"></div><button id="close-symbols">Cerrar</button></dialog>
+<script>
+const $=id=>document.getElementById(id);
+const panes=Object.fromEntries([...document.querySelectorAll('.chat')].map(el=>[el.dataset.node,{
+  el,input:el.querySelector('input'),form:el.querySelector('form'),sample:el.querySelector('select'),
+  load:el.querySelector('.load'),messages:el.querySelector('.messages'),notice:el.querySelector('.notice'),
+  count:el.querySelector('.count'),submit:el.querySelector('.submit'),status:el.querySelector('.status'),signature:''
+}]));
+let state={},sampleSignature='',paletteSignature='',pickerNode='A';
+const pending=new Map();
+function notice(message,error=false,node=null){const target=node?panes[node].notice:$('notice');target.textContent=message;target.className='notice '+(error?'error':'muted')}
+function byteCount(node){const p=panes[node];p.count.textContent=state.encoding==='cp1252'
+  ?[...p.input.value].length+' / 185 bytes CP1252; se valida al enviar'
+  :new TextEncoder().encode(p.input.value).length+' / 185 bytes UTF-8'}
+function populateSamples(data){const sig=JSON.stringify([data.encoding,data.text_samples]);if(sig===sampleSignature)return;sampleSignature=sig;
+  for(const p of Object.values(panes)){const old=p.sample.value;p.sample.replaceChildren();
+    for(const s of data.text_samples||[]){const option=document.createElement('option');option.value=s.key;option.textContent=s.label;option.disabled=!s.allowed;p.sample.append(option)}
+    if([...p.sample.options].some(o=>o.value===old))p.sample.value=old;
+    p.load.disabled=!data.text_samples?.find(s=>s.key===p.sample.value)?.allowed;
+  }
+}
+function drawMessages(node,rows){const p=panes[node],sig=JSON.stringify(rows);if(sig===p.signature)return;p.signature=sig;
+  const follow=p.messages.scrollTop+p.messages.clientHeight>=p.messages.scrollHeight-20;p.messages.replaceChildren();
+  if(!rows.length){const note=document.createElement('p');note.className='muted';note.textContent='La recepción aparece cuando esta K8 entrega el mensaje.';p.messages.append(note)}
+  for(const m of rows){const bubble=document.createElement('div');bubble.className='bubble'+(m.outgoing?' out':'');
+    const author=document.createElement('span');author.className='author';const peer=node==='A'?'B':'A';author.textContent=m.outgoing?'Tú ('+node+') → '+peer:peer+' → Tú ('+node+')';
+    const value=document.createElement('span');value.className='message-text';value.textContent=m.text||'(mensaje vacío)';
+    const meta=document.createElement('span');meta.className='meta';meta.textContent=m.time+' · '+(m.outgoing?(m.error|| (m.received?'Recibido en el otro extremo':m.confirmed?'Tramas confirmadas':'En cola / transmitiendo')):'Recibido por esta K8')+(m.source==='archivo importado'?' · archivo importado':'');
+    bubble.append(author,value,meta);p.messages.append(bubble)
+  }
+  if(follow)p.messages.scrollTop=p.messages.scrollHeight;
+}
+function render(data){state=data;populateSamples(data);const ready=Object.keys(data.nodes).filter(n=>data.nodes[n].ready),connected=Object.keys(data.nodes).filter(n=>data.nodes[n].connected);
+  $('main').classList.toggle('single',connected.length===1);
+  $('encoding').textContent='Codificación: '+data.encoding+(data.busy?' · Prueba en ejecución':'');
+  const inactive=ready.some(n=>data.nodes[n].app.RUN!==1);
+  for(const n of ['A','B']){const s=data.nodes[n],p=panes[n],box=$(n.toLowerCase());p.el.hidden=connected.length===1&&!s.connected;
+    p.status.textContent=data.busy?'Prueba en curso':s.ready?(s.app.RUN?'Chat activo':'Activar chat'):'Sin conexión';
+    p.submit.disabled=data.busy||!s.ready||inactive;box.replaceChildren();const title=document.createElement('strong');title.textContent='K8 '+n;box.append(title,document.createElement('br'));
+    box.append(s.connected?s.version+' BUILD'+s.build:'Sin conexión local',document.createElement('br'),'TX '+(s.app.TX??0)+' · RX '+(s.app.RX??0));
+    drawMessages(n,data.conversations?.[n]||[]);byteCount(n);
+  }
+  const logs=$('logs');logs.replaceChildren();const heading=document.createElement('h2');heading.textContent='Registro reciente';logs.append(heading);
+  for(const e of data.logs.slice(-16)){const div=document.createElement('div');div.className='entry '+e.severity;div.textContent=e.time+' · '+e.node+' · '+e.category+': '+e.text;logs.append(div)}
+}
+async function refresh(){try{const r=await fetch('/api/state');if(!r.ok)throw Error('Servidor no disponible');render(await r.json());
+  for(const [id,node] of pending){const result=await(await fetch('/api/result/'+id)).json();if(result.state!=='pending'){notice(result.message||'',result.state==='error',node);pending.delete(id)}}
+}catch(e){notice('Mantén la app local abierta para usar el chat web.',true)}}
+async function post(path,body,node=null){try{const response=await fetch(path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await response.json();if(!response.ok)throw Error(data.error||'Solicitud rechazada');pending.set(data.id,node);notice('Solicitud enviada al programa…',false,node);return true}catch(e){notice(e.message,true,node);return false}}
+function openSymbols(node){pickerNode=node;const sig=JSON.stringify([state.encoding,state.allowed_symbols]);
+  if(sig!==paletteSignature){paletteSignature=sig;const root=$('palettes');root.replaceChildren();
+    for(const [title,chars] of Object.entries(state.palettes||{})){const h=document.createElement('h3');h.textContent=title;const grid=document.createElement('div');grid.className='symbols';
+      for(const char of chars){const button=document.createElement('button');button.type='button';button.textContent=char;button.disabled=state.allowed_symbols?.[char]===false;
+        button.title=new TextEncoder().encode(char).length+' bytes UTF-8';button.addEventListener('click',()=>{const p=panes[pickerNode],start=p.input.selectionStart??p.input.value.length,end=p.input.selectionEnd??start;p.input.setRangeText(char,start,end,'end');byteCount(pickerNode);$('symbols').close();p.input.focus()});grid.append(button)}
+      root.append(h,grid)
+    }
+  }
+  $('symbols').showModal();
+}
+for(const [node,p] of Object.entries(panes)){
+  p.form.addEventListener('submit',async event=>{event.preventDefault();if(state.encoding==='utf-8'&&new TextEncoder().encode(p.input.value).length>185){notice('Máximo 185 bytes. Reduce el mensaje.',true,node);return}if(await post('/api/send',{node,text:p.input.value},node)){p.input.value='';byteCount(node)}});
+  p.input.addEventListener('input',()=>byteCount(node));p.el.querySelector('.picker').addEventListener('click',()=>openSymbols(node));
+  p.sample.addEventListener('change',()=>p.load.disabled=!state.text_samples?.find(s=>s.key===p.sample.value)?.allowed);
+  p.load.addEventListener('click',()=>{const sample=state.text_samples?.find(s=>s.key===p.sample.value);if(sample?.allowed){p.input.value=sample.text;byteCount(node);p.input.focus()}});
+}
+$('close-symbols').addEventListener('click',()=>$('symbols').close());
+for(const b of document.querySelectorAll('[data-action]'))b.addEventListener('click',()=>{const node=Object.keys(state.nodes||{}).find(n=>state.nodes[n].ready)||'A';post('/api/action',{node,action:b.dataset.action})});
+refresh();setInterval(refresh,750);
+</script></body></html>

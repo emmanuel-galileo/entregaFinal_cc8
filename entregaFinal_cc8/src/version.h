@@ -1,0 +1,14 @@
+#ifndef APP_VERSION_H
+#define APP_VERSION_H
+#define APP_BUILD 1105U
+#ifndef APP_ESTACION
+#define APP_ESTACION 1
+#endif
+#if APP_ESTACION
+#define APP_VERSION_NAME "ESTACION"
+#define APP_RX_ACTIVE_LOW 0U
+#else
+#define APP_VERSION_NAME "PROTO"
+#define APP_RX_ACTIVE_LOW 1U
+#endif
+#endif
